@@ -8,46 +8,7 @@ public class RoundRobinSample {
         Map<Integer, String> req_to_server_id = new HashMap<>();
         int cur_server_id = 0;
 
-        if (sticky) {
-            for (int i = 0; i < requests.length; i++) {
-                if (req_to_server_id.isEmpty()) {
-                    req_to_server_id.put(cur_server_id, requests[i]);
-                } else {
-                    System.out.println("requests = " + requests[i]);
-                    boolean flag = false;
-                    for (Integer key : req_to_server_id.keySet()) {
-                        if(req_to_server_id.get(key).contains(requests[i])){
-                            req_to_server_id.put(key,
-                                    req_to_server_id.get(key) +","+ requests[i]);
-                            cur_server_id = (cur_server_id + 1) % servers;
-                            flag = false;
-                            break;
-                        }else{
-                            flag = true;
-                        }
-                    }
-                    if(flag){
-                        if(!req_to_server_id.containsKey(cur_server_id)){
-                            req_to_server_id.put(cur_server_id, requests[i]);
-                        }else {
-                            req_to_server_id.put(cur_server_id,
-                                    req_to_server_id.get(cur_server_id) +","+ requests[i]);
-                        }
-                    }
-                }
-                System.out.println("req_to_server_id = " + req_to_server_id);
-            }
-        } else {
-            for (int i = 0; i < requests.length; i++) {
-                if(!req_to_server_id.containsKey(cur_server_id)){
-                    req_to_server_id.put(cur_server_id, requests[i]);
-                }else {
-                    req_to_server_id.put(cur_server_id,
-                            req_to_server_id.get(cur_server_id) +","+ requests[i]);
-                }
-                cur_server_id = (cur_server_id + 1) % servers;
-            }
-        }
+
         return req_to_server_id;
     }
 

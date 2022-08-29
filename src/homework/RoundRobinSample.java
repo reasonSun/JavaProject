@@ -10,7 +10,6 @@ public class RoundRobinSample {
 
         if (sticky) {
             for (int i = 0; i < requests.length; i++) {
-
                 if (req_to_server_id.isEmpty()) {
                     req_to_server_id.put(cur_server_id, requests[i]);
                 } else {
@@ -48,7 +47,6 @@ public class RoundRobinSample {
                 }
                 cur_server_id = (cur_server_id + 1) % servers;
             }
-
         }
         return req_to_server_id;
     }
@@ -57,7 +55,7 @@ public class RoundRobinSample {
         RoundRobinSample robinSample = new RoundRobinSample();
         String[] requests = {"1","1","2","1","3","3","4"};
 //        String[] requests = {"1","1","2","2","3","3"};
-        Map<Integer, String> result = robinSample.solution(2,true, requests);
+        Map<Integer, String> result = robinSample.solution(3,true, requests);
 
         System.out.println("result = " + result);
     }

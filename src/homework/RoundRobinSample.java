@@ -1,63 +1,64 @@
 package homework;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RoundRobinSample {
-    public Map<Integer, String> solution(int servers, boolean sticky, String[] requests) {
-        Map<Integer, String> req_to_server_id = new HashMap<>();
-        int cur_server_id = 0;
+    final Map<Integer, List<String>> serverIdToReq = new HashMap<>();
+    int curServerId = 0;
+    public Map<Integer, List<String>> solution(int serverCnt, boolean sticky, String[] requests) {
 
         if (sticky) {
-            for (int i = 0; i < requests.length; i++) {
-
-                if (req_to_server_id.isEmpty()) {
-                    req_to_server_id.put(cur_server_id, requests[i]);
-                } else {
-                    System.out.println("requests = " + requests[i]);
-                    boolean flag = false;
-                    for (Integer key : req_to_server_id.keySet()) {
-                        if(req_to_server_id.get(key).contains(requests[i])){
-                            req_to_server_id.put(key,
-                                    req_to_server_id.get(key) +","+ requests[i]);
-                            cur_server_id = (cur_server_id + 1) % servers;
-                            flag = false;
-                            break;
-                        }else{
-                            flag = true;
-                        }
-                    }
-                    if(flag){
-                        if(!req_to_server_id.containsKey(cur_server_id)){
-                            req_to_server_id.put(cur_server_id, requests[i]);
-                        }else {
-                            req_to_server_id.put(cur_server_id,
-                                    req_to_server_id.get(cur_server_id) +","+ requests[i]);
-                        }
-                    }
-                }
-                System.out.println("req_to_server_id = " + req_to_server_id);
-            }
+            processSticky(serverCnt, requests);
         } else {
-            for (int i = 0; i < requests.length; i++) {
-                if(!req_to_server_id.containsKey(cur_server_id)){
-                    req_to_server_id.put(cur_server_id, requests[i]);
-                }else {
-                    req_to_server_id.put(cur_server_id,
-                            req_to_server_id.get(cur_server_id) +","+ requests[i]);
-                }
-                cur_server_id = (cur_server_id + 1) % servers;
-            }
-
+            processNonSticky(serverCnt, requests);
         }
-        return req_to_server_id;
+        return serverIdToReq;
+    }
+
+    private void processSticky(int serverCnt, String[] requests) {
+        for (String request : requests) {
+            boolean registerFlag = false;
+
+            for (Integer key : serverIdToReq.keySet()) {
+                if(serverIdToReq.getOrDefault(key, new ArrayList<>()).contains(request)){
+                    serverIdToReq.get(key).add(request);
+
+                    curServerId = (curServerId + 1) % serverCnt;
+                    registerFlag = true;
+                    break;
+                }
+            }
+            if(!registerFlag){
+                if(!serverIdToReq.containsKey(curServerId)){
+                    serverIdToReq.put(curServerId, new ArrayList<>(List.of(request)));
+                }else {
+                    serverIdToReq.get(curServerId).add(request);
+                }
+            }
+            System.out.println("serverIdToReq = " + serverIdToReq);
+        }
+    }
+
+    private void processNonSticky(int serverCnt, String[] requests) {
+        for (String request : requests) {
+            if(!serverIdToReq.containsKey(curServerId)){
+                serverIdToReq.put(curServerId, new ArrayList<>(List.of(request)));
+            }else {
+                serverIdToReq.get(curServerId).add(request);
+            }
+            curServerId = (curServerId + 1) % serverCnt;
+        }
     }
 
     public static void main(String[] args) {
         RoundRobinSample robinSample = new RoundRobinSample();
-        String[] requests = {"1","1","2","1","3","3","4"};
-//        String[] requests = {"1","1","2","2","3","3"};
-        Map<Integer, String> result = robinSample.solution(2,true, requests);
+//        String[] requests = {"1","1","2","1","3","3","4"};
+        String[] requests = {"1","1","2","2","3","3"};
+        Map<Integer, List<String>> result = robinSample.solution(3,true, requests);
 
         System.out.println("result = " + result);
     }

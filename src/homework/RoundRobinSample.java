@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RoundRobinSample {
-    final Map<Integer, List<String>> reqToServerId = new HashMap<>();
+    final Map<Integer, List<String>> serverToReqId = new HashMap<>();
     int curServerId = 0;
     public Map<Integer, List<String>> solution(int serverCnt, boolean sticky, String[] requests) {
 
@@ -16,16 +16,16 @@ public class RoundRobinSample {
         } else {
             doStickyFalse(serverCnt, requests);
         }
-        return reqToServerId;
+        return serverToReqId;
     }
 
     private void doStickyTrue(int serverCnt, String[] requests) {
         for (String request : requests) {
             boolean registerFlag = false;
 
-            for (Integer key : reqToServerId.keySet()) {
-                if(reqToServerId.getOrDefault(key, new ArrayList<>()).contains(request)){
-                    reqToServerId.get(key).add(request);
+            for (Integer key : serverToReqId.keySet()) {
+                if(serverToReqId.getOrDefault(key, new ArrayList<>()).contains(request)){
+                    serverToReqId.get(key).add(request);
 
                     curServerId = (curServerId + 1) % serverCnt;
                     registerFlag = true;
@@ -33,22 +33,22 @@ public class RoundRobinSample {
                 }
             }
             if(!registerFlag){
-                if(!reqToServerId.containsKey(curServerId)){
-                    reqToServerId.put(curServerId, new ArrayList<>(Arrays.asList(request)));
+                if(!serverToReqId.containsKey(curServerId)){
+                    serverToReqId.put(curServerId, new ArrayList<>(Arrays.asList(request)));
                 }else {
-                    reqToServerId.get(curServerId).add(request);
+                    serverToReqId.get(curServerId).add(request);
                 }
             }
-            System.out.println("reqToServerId = " + reqToServerId);
+            System.out.println("serverToReqId = " + serverToReqId);
         }
     }
 
     private void doStickyFalse(int serverCnt, String[] requests) {
         for (String request : requests) {
-            if(!reqToServerId.containsKey(curServerId)){
-                reqToServerId.put(curServerId, new ArrayList<>(Arrays.asList(request)));
+            if(!serverToReqId.containsKey(curServerId)){
+                serverToReqId.put(curServerId, new ArrayList<>(Arrays.asList(request)));
             }else {
-                reqToServerId.get(curServerId).add(request);
+                serverToReqId.get(curServerId).add(request);
             }
             curServerId = (curServerId + 1) % serverCnt;
         }
